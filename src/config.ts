@@ -1,0 +1,493 @@
+import { VideoMetadata } from './types';
+
+export const APP_NAME = "CopyCat";
+export const APP_VERSION = "v7.0";
+export const API_BASE_URL = "https://dropship-api.chideraezeudu2.workers.dev";
+
+export const TRIAL_LIMITS = {
+  days: 7,
+  maxVideos: 2,
+  videoLengthSec: 10,
+  totalSeconds: 20,
+  resolution: "480p",
+  watermarked: true,
+  maxFollows: 1,
+  maxConceptLists: 3,
+  leaderboardWindow: "24h"
+};
+
+export const MISSING_VIDEOS = [
+  {
+    num: 1,
+    title: "Product demo — LED bike wings",
+    specs: "10s, 9:16, MP4 with audio",
+    desc: "A product in use, close-up, 'Comment WINGS for the link' on screen.",
+    placement: "For the hero 'Product demo' tab + Format Library 'Product demo' card."
+  },
+  {
+    num: 2,
+    title: "Gift unboxing / reaction",
+    specs: "10s, 9:16, MP4 with audio",
+    desc: "Someone opening a gift, reaction shot, on-screen benefit text.",
+    placement: "For Format Library 'Gift reaction' card."
+  },
+  {
+    num: 3,
+    title: "Toy blaster demo",
+    specs: "10s, 9:16, MP4 with audio",
+    desc: "Toy in action, fast cuts, fun.",
+    placement: "For Format Library 'Toys' tab."
+  },
+  {
+    num: 4,
+    title: "Hero / Seedance quality showcase",
+    specs: "15s, 9:16, 1080p, MP4 with audio",
+    desc: "The best-looking video we have, to show what the Hero (Seedance) tier can do.",
+    placement: "For the pricing page, Scale plan card."
+  },
+  {
+    num: 5,
+    title: "Clone before/after (most important)",
+    specs: "15s, 9:16, MP4 with audio",
+    desc: "Split screen — original viral video on the left, CopyCat clone on the right, same format, different product.",
+    placement: "For the landing page 'How it works' section."
+  },
+  {
+    num: 6,
+    title: "Dashboard screen recording",
+    specs: "20s, 16:9, MP4 (no audio needed)",
+    desc: "A real screen recording of the dashboard — leaderboard → concepts → generate → video appears.",
+    placement: "For the landing page 'How it works' section."
+  }
+];
+
+export const WORKER_SECRETS_NEEDED = [
+  "ARGOLINK_API_KEY",
+  "OPENROUTER_API_KEY",
+  "TREG_API_KEY",
+  "FAL_API_KEY",
+  "HIGGSFIELD_API_KEY"
+];
+
+// 14 real TikTok product videos + 3 founder videos = 17 total
+export const VIDEOS_DATA: VideoMetadata[] = [
+  {
+    id: "made-me-buy-it-1",
+    filename: "made-me-buy-it-1",
+    title: "Home Gadget Viral Cleaner",
+    caption: "Home gadget, straight to the point.",
+    creator: "@sarvina450",
+    views: 24906387,
+    viewsFormatted: "24.9M",
+    likes: 1840000,
+    likesFormatted: "1.8M",
+    comments: 42100,
+    commentsFormatted: "42.1K",
+    durationSec: 12,
+    niche: "Home",
+    ctaKeyword: "Comment CLEAN",
+    formatName: "Problem → solution demo",
+    postedAgo: "11h ago",
+    statusTag: "Took off",
+    windowTrending: "12h"
+  },
+  {
+    id: "projector",
+    filename: "projector",
+    title: "Mini Portable HD Projector",
+    caption: "Transform any wall into a cinema in seconds.",
+    creator: "@breyannahhenry",
+    views: 20020864,
+    viewsFormatted: "20.0M",
+    likes: 1420000,
+    likesFormatted: "1.4M",
+    comments: 36800,
+    commentsFormatted: "36.8K",
+    durationSec: 30,
+    niche: "Home",
+    ctaKeyword: "Link in bio",
+    formatName: "Problem → solution demo",
+    postedAgo: "18h ago",
+    statusTag: "Took off",
+    windowTrending: "24h"
+  },
+  {
+    id: "made-me-buy-it-2",
+    filename: "made-me-buy-it-2",
+    title: "Smart Kitchen Peeler",
+    caption: "Home gadget, straight to the point.",
+    creator: "@velora8892",
+    views: 14316378,
+    viewsFormatted: "14.3M",
+    likes: 980000,
+    likesFormatted: "980K",
+    comments: 22400,
+    commentsFormatted: "22.4K",
+    durationSec: 8,
+    niche: "Home",
+    ctaKeyword: "Comment WANT",
+    formatName: "Problem → solution demo",
+    postedAgo: "22h ago",
+    statusTag: "Took off",
+    windowTrending: "24h"
+  },
+  {
+    id: "car-lights-1",
+    filename: "car-lights-1",
+    title: "Wireless Ambient Car LEDs",
+    caption: "Wireless ambient lights you stick on anywhere.",
+    creator: "@maximus.yohe",
+    views: 9941000,
+    viewsFormatted: "9.9M",
+    likes: 680000,
+    likesFormatted: "680K",
+    comments: 14500,
+    commentsFormatted: "14.5K",
+    durationSec: 28,
+    niche: "Automotive",
+    ctaKeyword: "Comment GLOW",
+    formatName: "Problem → solution demo",
+    postedAgo: "5h ago",
+    statusTag: "Took off",
+    windowTrending: "6h"
+  },
+  {
+    id: "christmas-tree",
+    filename: "christmas-tree",
+    title: "Tiny Rotating Christmas Tree",
+    caption: "Stop spending hours decorating.",
+    creator: "@baw6v5",
+    views: 9922551,
+    viewsFormatted: "9.9M",
+    likes: 742000,
+    likesFormatted: "742K",
+    comments: 18200,
+    commentsFormatted: "18.2K",
+    durationSec: 16,
+    niche: "Gift",
+    ctaKeyword: "Comment TREE",
+    formatName: "Gift reaction",
+    postedAgo: "4h ago",
+    statusTag: "Took off",
+    windowTrending: "6h"
+  },
+  {
+    id: "car-lights-2",
+    filename: "car-lights-2",
+    title: "Dynamic Flowing Underglow LEDs",
+    caption: "Full app control and syncs to music.",
+    creator: "@motoledsofficial",
+    views: 4840174,
+    viewsFormatted: "4.8M",
+    likes: 340000,
+    likesFormatted: "340K",
+    comments: 9200,
+    commentsFormatted: "9.2K",
+    durationSec: 14,
+    niche: "Automotive",
+    ctaKeyword: "Link in bio",
+    formatName: "Problem → solution demo",
+    postedAgo: "10h ago",
+    statusTag: "Took off",
+    windowTrending: "12h"
+  },
+  {
+    id: "led-wings-1",
+    filename: "led-wings-1",
+    title: "LED Bike Aero Wings Night Edition",
+    caption: 'Comment "WING" if you need this',
+    creator: "@wingwolt.us",
+    views: 1148595,
+    viewsFormatted: "1.1M",
+    likes: 94200,
+    likesFormatted: "94.2K",
+    comments: 3400,
+    commentsFormatted: "3.4K",
+    durationSec: 19,
+    niche: "Cycling / Moto",
+    ctaKeyword: 'Comment "WING"',
+    formatName: 'Comment WORD for the link',
+    postedAgo: "1.5h ago",
+    statusTag: "Took off",
+    windowTrending: "2h"
+  },
+  {
+    id: "toy-blaster-1",
+    filename: "toy-blaster-1",
+    title: "Automatic Hydro Gel Blaster",
+    caption: "Full auto electric blaster with drum mag.",
+    creator: "@jmj_gelblaster",
+    views: 996348,
+    viewsFormatted: "996K",
+    likes: 82500,
+    likesFormatted: "82.5K",
+    comments: 2100,
+    commentsFormatted: "2.1K",
+    durationSec: 28,
+    niche: "Toys",
+    ctaKeyword: "Comment BLAST",
+    formatName: "Problem → solution demo",
+    postedAgo: "1.8h ago",
+    statusTag: "Took off",
+    windowTrending: "2h"
+  },
+  {
+    id: "toy-blaster-2",
+    filename: "toy-blaster-2",
+    title: "Tactical Matte Black Blaster",
+    caption: "Compact edition with fast reload.",
+    creator: "@jmj_gelblaster",
+    views: 719793,
+    viewsFormatted: "720K",
+    likes: 58100,
+    likesFormatted: "58.1K",
+    comments: 1600,
+    commentsFormatted: "1.6K",
+    durationSec: 17,
+    niche: "Toys",
+    ctaKeyword: "Comment PEW",
+    formatName: "Problem → solution demo",
+    postedAgo: "8h ago",
+    statusTag: "Took off",
+    windowTrending: "12h"
+  },
+  {
+    id: "led-wings-2",
+    filename: "led-wings-2",
+    title: "LED Wings Rider Reaction",
+    caption: "People literally stop at the red light to ask.",
+    creator: "@apexmotoclub",
+    views: 528816,
+    viewsFormatted: "529K",
+    likes: 41200,
+    likesFormatted: "41.2K",
+    comments: 1800,
+    commentsFormatted: "1.8K",
+    durationSec: 15,
+    niche: "Cycling / Moto",
+    ctaKeyword: "Comment RIDE",
+    formatName: 'Comment WORD for the link',
+    postedAgo: "5.5h ago",
+    statusTag: "Took off",
+    windowTrending: "6h"
+  },
+  {
+    id: "led-wings-3",
+    filename: "led-wings-3",
+    title: "LED Bike Wings Dual Angle",
+    caption: 'Comment "WINGS" if you want this',
+    creator: "@ride.flare",
+    views: 490960,
+    viewsFormatted: "491K",
+    likes: 38600,
+    likesFormatted: "38.6K",
+    comments: 1200,
+    commentsFormatted: "1.2K",
+    durationSec: 12,
+    niche: "Cycling / Moto",
+    ctaKeyword: 'Comment "WINGS"',
+    formatName: 'Comment WORD for the link',
+    postedAgo: "15h ago",
+    statusTag: "Took off",
+    windowTrending: "24h"
+  },
+  {
+    id: "beauty-gloss",
+    filename: "beauty-gloss",
+    title: "Hydrating Plumping Lip Gloss",
+    caption: "Glass finish that lasts through coffee.",
+    creator: "@globalbeautyreviewer",
+    views: 206632,
+    viewsFormatted: "207K",
+    likes: 18400,
+    likesFormatted: "18.4K",
+    comments: 840,
+    commentsFormatted: "840",
+    durationSec: 16,
+    niche: "Beauty",
+    ctaKeyword: "Comment GLOSS",
+    formatName: "Problem → solution demo",
+    postedAgo: "17h ago",
+    statusTag: "Took off",
+    windowTrending: "24h"
+  },
+  {
+    id: "beauty-routine",
+    filename: "beauty-routine",
+    title: "Evening Cleansing Oil Routine",
+    caption: "Melt waterproof mascara in 30 seconds.",
+    creator: "@yunaohh",
+    views: 69099,
+    viewsFormatted: "69K",
+    likes: 5200,
+    likesFormatted: "5.2K",
+    comments: 230,
+    commentsFormatted: "230",
+    durationSec: 28,
+    niche: "Beauty",
+    ctaKeyword: "Link in bio",
+    formatName: "Problem → solution demo",
+    postedAgo: "21h ago",
+    statusTag: "Took off",
+    windowTrending: "24h"
+  },
+  {
+    id: "gift-necklace",
+    filename: "gift-necklace",
+    title: "Custom Projection Love Necklace",
+    caption: "Unboxing the gift that made her cry happy tears.",
+    creator: "@bestiesnecklace",
+    views: 67688,
+    viewsFormatted: "68K",
+    likes: 4900,
+    likesFormatted: "4.9K",
+    comments: 185,
+    commentsFormatted: "185",
+    durationSec: 13,
+    niche: "Gift",
+    ctaKeyword: "Comment GIFT",
+    formatName: "Gift reaction",
+    postedAgo: "19h ago",
+    statusTag: "Took off",
+    windowTrending: "24h"
+  },
+  // 3 founder's own videos
+  {
+    id: "dancing-character-hero",
+    filename: "dancing-character-hero",
+    title: "Dancing Character Indoor Hero",
+    caption: "Same character, indoor studio routine.",
+    creator: "@copycat.founder",
+    views: 312000,
+    viewsFormatted: "312K",
+    likes: 28400,
+    likesFormatted: "28.4K",
+    comments: 920,
+    commentsFormatted: "920",
+    durationSec: 11,
+    niche: "Fandom",
+    formatName: "Character dance",
+    isFounderVideo: true,
+    postedAgo: "7h ago",
+    statusTag: "Took off",
+    windowTrending: "12h"
+  },
+  {
+    id: "dancing-character-outdoor",
+    filename: "dancing-character-outdoor",
+    title: "Dancing Character Outdoor Steps",
+    caption: "Same character, new scene.",
+    creator: "@copycat.founder",
+    views: 450000,
+    viewsFormatted: "450K",
+    likes: 39100,
+    likesFormatted: "39.1K",
+    comments: 1400,
+    commentsFormatted: "1.4K",
+    durationSec: 21,
+    niche: "Fandom",
+    formatName: "Character dance",
+    isFounderVideo: true,
+    postedAgo: "10h ago",
+    statusTag: "Took off",
+    windowTrending: "12h"
+  },
+  {
+    id: "barber-story",
+    filename: "barber-story",
+    title: "Jordan Sneaker Barber 3D Animation",
+    caption: '"IT\'S A DESIGN" — Hook in 3 seconds, payoff at the end.',
+    creator: "@copycat.founder",
+    views: 890000,
+    viewsFormatted: "890K",
+    likes: 78500,
+    likesFormatted: "78.5K",
+    comments: 3100,
+    commentsFormatted: "3.1K",
+    durationSec: 55,
+    niche: "Fandom",
+    formatName: "Story format",
+    isFounderVideo: true,
+    postedAgo: "12h ago",
+    statusTag: "Took off",
+    windowTrending: "12h"
+  }
+];
+
+export const FORMAT_TABS_MAPPING: Record<string, [string, string]> = {
+  "Gift": ["gift-necklace", "christmas-tree"],
+  "Fandom": ["dancing-character-hero", "dancing-character-outdoor"],
+  "Automotive": ["car-lights-1", "car-lights-2"],
+  "Cycling / Moto": ["led-wings-1", "led-wings-2"],
+  "Toys": ["toy-blaster-1", "toy-blaster-2"],
+  "Beauty": ["beauty-gloss", "beauty-routine"],
+  "Home": ["projector", "made-me-buy-it-1"]
+};
+
+export const FORMAT_RECIPES = [
+  {
+    name: "Comment WORD for the link",
+    niche: "Cycling / Moto",
+    videoId: "led-wings-1",
+    hook: "Show the visual payoff instantly in first 2 seconds with high contrast.",
+    shots: [
+      { time: "0–3s", label: "Visual Stunner", desc: "Dark night street, headlights off, sudden burst of bright aerodynamic wing lighting." },
+      { time: "3–8s", label: "Driver Reaction", desc: "Show another driver or pedestrian pointing their phone, asking what that is." },
+      { time: "8–15s", label: "Clip-on Demo", desc: "Hand snaps the magnetic bracket onto helmet or bike frame in 1 second." },
+      { time: "15–20s", label: "App & Color Modes", desc: "Quick cuts through 16 million colors and flashing strobe modes." },
+      { time: "20–25s", label: "Keyword CTA", desc: "Text on screen: Comment 'WINGS' and I'll DM you the private 50% discount link." }
+    ]
+  },
+  {
+    name: "Problem → solution demo",
+    niche: "Home",
+    videoId: "made-me-buy-it-1",
+    hook: "The agonizing annoyance everyone experiences, solved with one satisfying click.",
+    shots: [
+      { time: "0–3s", label: "The Annoyance", desc: "Cables tangled, desk overflowing, or tedious cleaning that won't budge." },
+      { time: "3–8s", label: "The Reveal", desc: "Hold up the compact device directly to camera with zero explanation fluff." },
+      { time: "8–15s", label: "The Demonstration", desc: "One continuous glide or press demonstrating effortless immediate perfection." },
+      { time: "15–20s", label: "Durability Proof", desc: "Drop test, water rinse, or side-by-side comparison with the traditional tool." },
+      { time: "20–25s", label: "Link Urgency", desc: "Comment 'CLEAN' or tap link before the weekend restock sells out." }
+    ]
+  },
+  {
+    name: "Gift reaction",
+    niche: "Gift",
+    videoId: "christmas-tree",
+    hook: "Stop spending hours decorating — unbox a magical miniature centerpiece.",
+    shots: [
+      { time: "0–3s", label: "Suspense Box", desc: "Close-up hands peeling delicate tissue paper with soft room lighting." },
+      { time: "3–8s", label: "First Reaction", desc: "Gasp / smile as tiny built-in lights instantly glow and carousel spins." },
+      { time: "8–15s", label: "Desktop Placement", desc: "Placed next to laptop, cozy coffee mug, gentle snowfall outside." },
+      { time: "15–20s", label: "USB / Battery Ease", desc: "Show one-button touch control and quiet rotating motor." },
+      { time: "20–25s", label: "Tag Someone CTA", desc: "Send this to the person who needs early holiday cheer." }
+    ]
+  },
+  {
+    name: "Story format",
+    niche: "Fandom",
+    videoId: "barber-story",
+    hook: "'IT'S A DESIGN' — Hook in 3 seconds, payoff at the end.",
+    shots: [
+      { time: "0–3s", label: "The Shock Cut", desc: "Hairdresser makes accidental razor slice, customer turns around enraged." },
+      { time: "3–8s", label: "Desperate Pivot", desc: "Barber improvises an insane artistic pattern to cover the mistake." },
+      { time: "8–15s", label: "The Transformation", desc: "Dramatic time-lapse shaping it into an iconic sneaker silhouette." },
+      { time: "15–20s", label: "The Customer Reveal", desc: "Mirror flips around, customer goes from furious to mind-blown." },
+      { time: "20–25s", label: "Follow Callout", desc: "Follow for episode 2 and tell me your wildest haircut disaster below." }
+    ]
+  },
+  {
+    name: "Character dance",
+    niche: "Fandom",
+    videoId: "dancing-character-outdoor",
+    hook: "Same consistent 3D character performing trending dance in iconic real-world locations.",
+    shots: [
+      { time: "0–3s", label: "Beat Drop Intro", desc: "Character drops into frame on the iconic museum steps in perfect sync." },
+      { time: "3–8s", label: "Signature Choreography", desc: "Dynamic camera orbit tracking hands and footwear smoothly." },
+      { time: "8–15s", label: "Prop Integration", desc: "Character pulls the promoted physical product out of jacket pocket mid-spin." },
+      { time: "15–20s", label: "Crowd / Scale Accent", desc: "Wide angle showing grandeur of scene while character maintains rhythm." },
+      { time: "20–25s", label: "Loop Match", desc: "Ending pose matches starting silhouette seamlessly for infinite rewatch." }
+    ]
+  }
+];

@@ -1,0 +1,483 @@
+# COPYCAT — Full Frontend Build Prompt for AI Studio (v4 — content-first, 2026-11-06)
+
+Copy this entire prompt into AI Studio. Do not skip sections. Build the whole app in one pass, then run the checklist at the end and fix every failing item before you say you are done.
+
+This is v4. It replaces v3. Read the live site first — https://copycat.chideraezeudu2.workers.dev/ — and match its look. This document does NOT give colour or size guidelines: it tells you exactly what goes where and exactly what it says. The landing page copy in Section 2 is the final copy — use those words. The dashboard in Section 5 is designed, tab by tab — build it the way it is described there.
+
+---
+
+## 0. The concept — what CopyCat is
+
+A premium, production-ready web app called **CopyCat** (TEMPORARY working name — it will change later, so put the name in ONE config constant, `APP_NAME`, and use it everywhere; never hard-code the name in 20 places. It is taken: a Shopify "Copy Cat" app, copycatpro.io, and a registered USPTO COPYCAT trademark for video software. Do not do a name clearance in this build — just keep the name in one constant so it is trivial to swap.)
+
+CopyCat is for people doing **organic AI dropshipping on TikTok** — AI-generated TikTok videos, no ad spend, no TikTok Shop.
+
+The product is two jobs, nothing else:
+
+1. **See what went viral in the last 24 hours** — a feed of viral organic TikTok videos from the last day.
+2. **Recreate it** — two ways, the user's choice: **(a)** through CopyCat's own video generation (pick a video → tailored concepts → generate, up to 30 seconds, 9:16, native audio), or **(b)** with the tools to generate it themselves on Claude — a ready-to-paste Claude prompt (viral format + their product/character → concept, hook, 5 shots, caption, and a video generation prompt) they copy from the video card.
+
+It is 50% intelligence dashboard + 50% video generation, in one app. Everything else is supporting, not the product.
+
+What it is NOT: not TikTok Shop, not a paid-ad spy tool, not a product-sourcing tool (that feature was removed — most users do NOT have a product ready yet, it is custom-made), not a generic AI video generator.
+
+Competitor bundle it replaces: Minea ($49/mo) + Higgsfield Plus ($59/mo) = $108/mo. CopyCat Starter is $49/mo for both halves together. You save $59/mo. Say that plainly on the landing page and the pricing page, with the real Minea and Higgsfield logos beside their names (see Section 8).
+
+---
+
+## 1. The workflow — build exactly this, in this order
+
+The user journey, end to end:
+
+```
+Landing page (/)
+  -> Sign up / Log in (/auth) — Google + email/password, local preview until Supabase Auth is connected
+  -> EITHER: start the ONE free trial (7 days, no card) -> /dashboard
+  -> OR: choose a plan (/pricing) -> paid checkout (Stripe, NOT live yet — see below) -> /dashboard
+```
+
+Rules:
+- A user who is not logged in and tries to open /dashboard, /leaderboard, /concepts, /videos, /settings is redirected to /auth, then back to where they were going.
+- A user who is logged in but has NO plan AND NO active trial and tries to open /dashboard is redirected to /pricing with the message "Pick a plan or start the free trial. You need a plan or the 7-day trial before the dashboard opens."
+- Never send a logged-in user back to the landing page on login — send them to /dashboard. (There is no onboarding flow — the user goes straight to /dashboard after sign-up or trial start.)
+- Logout returns the user to /.
+
+### The free trial — THE rule that matters most. Get this right.
+
+There is exactly ONE free trial. It is NOT per-plan. It is NOT "try Starter free for 7 days" or "try Growth free for 7 days".
+
+- 7 days, no card required — no card is collected at all, nothing is charged automatically when it ends.
+- Trial limits (show them wherever the trial is offered): **24h leaderboard only, follow 1 creator, 3 concept lists total, 2 x 10s videos at 480p (20 seconds total), watermarked.** No clones, no heroes, no 720p/1080p, no Instagram, no ad library, no coin packs.
+- The trial starts ONLY from a trial CTA: the nav "Start free trial" button, the hero "Start 7-day free trial" button, the closing CTA button, and the trial banner on the pricing page. Every one of those links to `/auth/?trial=1`.
+- After sign-up from a trial link, the trial starts immediately and the user goes straight to /dashboard. If the user is ALREADY signed in and clicks a trial link, the trial starts straight away (no second sign-in).
+- Pricing cards do NOT have a trial button. Each card has exactly ONE button: "Choose Starter" / "Choose Growth" / "Choose Scale". Choosing a plan is the paid path. Since Stripe is not live yet (see Section 7), choosing a plan shows an honest notice: "Paid checkout isn't live yet. Stripe Price IDs for the plans aren't created, so subscribing can't take a payment right now. Start the 7-day free trial (no card) instead." — with a link to the trial. Do NOT record a plan choice as a trial. Do NOT start a trial when the user picks a plan.
+- When the trial ends, generation locks until the user pays for a plan. Nothing is charged automatically.
+
+### The recreate workflow — the two paths, in detail
+
+When the user is on the dashboard and sees a viral video, they recreate it one of two ways:
+
+- **Path A — Recreate here (in the app).** The user clicks "Recreate here" on the video card. They go to Concepts with that video pre-filled, and concepts generate straight away (no extra click). They pick a concept, tweak it or edit it, then go to the generator and make the video (Wan 3.0 default, up to 30 seconds, 9:16, native audio). They download it and post it on TikTok.
+- **Path B — Recreate on Claude (themselves).** The user clicks "Copy Claude prompt" on the video card. A complete, ready-to-paste Claude prompt is copied to the clipboard and the button briefly reads "Copied ✓". The prompt contains: the viral video (format/product, creator, views, CTA, caption), the user's product and character (from Settings — if not set, it says so and asks Claude to suggest a character), and asks Claude for: (1) a concept adapted to their product, (2) a hook for the first 0–3 seconds, (3) a 5-shot breakdown with timestamps, (4) the caption and CTA word, (5) a video generation prompt to paste into a video tool (9:16, up to 30 seconds, native audio). The user pastes it into Claude, gets the workflow, and generates the video themselves. This is the same workflow the product's own users already use (Claude for concept/workflow, then a video tool).
+
+---
+
+## 2. Landing page (/) — exactly what it says, in this exact order
+
+Use these words. Do not rewrite them, do not "improve" them, do not add marketing fluff. Where a section says what goes in it, that is the content — build the layout around it, matching the live site's look.
+
+### 2.1 Promo banner (top of the page, full width)
+- Text: **"7-day free trial — no card required."**
+- Link on the right: **"Start free trial →"** (links to `/auth/?trial=1`).
+- No countdown. There is no real deadline, so do not invent one.
+
+### 2.2 Header (sticky)
+- Left: logo **"CopyCat◆"** (wordmark only — the ◆ is the only mark, no symbol, no icon).
+- Middle links, ONLY these three: **Formats** · **How it works** · **Pricing**. Do NOT add Going viral, Models, or FAQ to the header.
+- Right: the user chip (see Section 8), a **"Log in"** button, and a **"Start free trial"** button (links to `/auth/?trial=1`).
+
+### 2.3 Hero (centred)
+- H1: **"Find the viral video. Clone the format. Post it."** One word of the H1 is highlighted (the word "Clone").
+- Subhead: **"Watch the fastest-growing organic TikTok videos while they are still growing, get concepts tailored to your product, and generate the video in one click — no ad spend, no TikTok Shop, no starting from scratch."**
+- Buttons: **"Start 7-day free trial"** (links to `/auth/?trial=1`) and **"Try the demo ↓"** (scrolls to the demo section).
+- Trustline underneath the buttons, with the real logos beside the names: **"Starter $49/mo — replaces Minea ($49) + Higgsfield Plus ($59) — $108/mo. You save $59/mo."**
+
+### 2.4 Video-wall marquee
+- One dense row of 12 unique video tiles, drawn from the video set in Section 6 — no repeats. Autoplay, muted, loop. Pauses on hover. No second row, no captions on the tiles.
+
+### 2.5 Ticker (one quiet scrolling line)
+- Exactly these 10 phrases, in this order, lead words in a stronger weight, the rest muted, ONE ✦ marking the loop seam:
+  **"Velocity-ranked TikTok leaderboard ✦ Follow creators, get posting alerts ✦ Concepts written for your product ✦ Clone the format, not the video ✦ Wan 3.0 · Seedance 2.5 · Kling O3 ✦ 9:16 · up to 30s · native audio ✦ 2h · 6h · 24h · 3d windows ✦ Post to TikTok and Reels ✦ Organic only — no ad spend ✦ One app instead of two"**
+
+### 2.6 "Create better organic videos with AI" — 3 steps
+- Heading: **"Create better organic videos with AI"**
+- Subhead: **"Forget switching between dozens of tools, complex timelines, and slow production. CopyCat gives you everything you need to find, concept, and generate a video — in one place."**
+- Three steps, each with a video visual:
+  1. **"Pick the viral format"** — "The leaderboard ranks videos by velocity — views per hour — in 2h, 6h, 24h, and 3-day windows. Default is 6h. No month view: by then the wave is gone."
+  2. **"Get concepts for your product"** — "Pick a video and CopyCat gives you concepts already tailored to your product and character. You choose, tweak, or edit one. You do not invent the concept from scratch."
+  3. **"Generate the video"** — "One click. Wan 3.0, Seedance 2.5, or Kling O3. Download it and post it on TikTok."
+
+### 2.7 Demo — "Try it right here"
+- Heading: **"Try it right here"**
+- Subhead: **"Pick a viral video → get a concept → generate."**
+- How it works: three numbered steps, in order.
+  1. **"Pick a viral video"** — the user picks one from the leaderboard (loading state: "Loading the leaderboard…").
+  2. **"Get a concept for your product"** — before a video is picked: "Pick a video first." After picking: ONE concept at a time — the concept as a title plus its hook only. No shot lists, no 5-concept dump.
+  3. **"Generate the video"** — shows the cost line **"Wan 3.0 · 10s · 480p · 10 coins"** and a **"Generate video"** button, plus the line **"Full generation lives in the dashboard."**
+- NEVER dump raw backend text, key names, or debug state onto this section. If the backend is not connected, show its real message, sanitised, in one line.
+
+### 2.8 "Going viral right now" — results grid
+- Heading: **"Going viral right now"**
+- Intro line: **"Example videos from TikTok, shown with creator credit. The leaderboard ranks them by views per hour, not total views."**
+- A dense grid of video cards. Each card: the video, a short caption, views, and the creator handle. The cards are labelled **"Preview"** — these are real TikTok videos with their real view counts, shown as examples until the backend is live. The cards on the live page:
+  - LED bike wings at night — caption **"Comment "WING" if you need this"** — Views 1.1M — @wingwolt.us
+  - Home gadget — caption **"Home gadget, straight to the point."** — Views 14.3M — @velora8892
+  - Tiny Christmas tree — caption **"Stop spending hours decorating."** — Views 9.9M — @baw6v5
+  - LED bike wings, second angle — caption **"Comment "WINGS" if you want this"** — Views 491K — @ride.flare
+  - Character dance, outdoors — caption **"Same character, new scene."** — Format: Character — labelled **"Generated with CopyCat"**
+  - Story format — caption **""IT'S A DESIGN" — Hook in 3 seconds, payoff at the end."** — Format: Story — labelled **"Generated with CopyCat"**
+- NO revenue numbers anywhere. Views are real; revenue is not shown.
+
+### 2.9 Format tabs — "Every viral format you need, one app"
+- Heading: **"Every viral format you need, one app"**
+- Subhead: **"Trends decay fast. These are the formats that are working right now, grouped by what people are actually buying."**
+- 7 tabs, named by niche: **Gift** · **Fandom** · **Automotive** · **Cycling / Moto** · **Toys** · **Beauty** · **Home**. Default selected tab: **Cycling / Moto**.
+- Each tab's panel shows TWO real TikTok example videos playing, each with creator credit (handle + real views). The exact videos per tab:
+  - **Gift** — gift-necklace (@bestiesnecklace · 68K views), christmas-tree (@baw6v5 · 9.9M views).
+  - **Fandom** — dancing-character-hero, dancing-character-outdoor (both labelled "Generated with CopyCat").
+  - **Automotive** — car-lights-1 (@maximus.yohe · 9.9M views), car-lights-2 (@motoledsofficial · 4.8M views).
+  - **Cycling / Moto** — led-wings-1 (@wingwolt.us · 1.1M views), led-wings-2 (@apexmotoclub · 529K views).
+  - **Toys** — toy-blaster-1 (@jmj_gelblaster · 996K views), toy-blaster-2 (@jmj_gelblaster · 720K views).
+  - **Beauty** — beauty-gloss (@globalbeautyreviewer · 207K views), beauty-routine (@yunaohh · 69K views).
+  - **Home** — projector (@breyannahhenry · 20M views), made-me-buy-it-1 (@sarvina450 · 24.9M views).
+
+### 2.10 Feature rows (3, alternating, each with a real visual)
+1. **"The most consistent AI characters"** — "Your product and character, the same in every clip — up to 10 reference images, held across every generation." Then: **"Create your own AI character"** — "Generate a character once — and make them hold your product, wear your clothes, and dance in your scene. Upload your product and character references once, and every video keeps the same character and product, clip after clip." Visual: the dancing-character videos.
+2. **"Clone a proven format"** — "Kling O3 video-to-video copies the motion and format of a viral video, with your product and character in it. Clone wiring is in progress on the backend — the app says so instead of faking it." Visual: a split-screen — the viral LED wings video labelled **"Viral video"**, an arrow, the dancing-character outdoor video labelled **"Your character"**, plus an **"Illustration"** chip. It shows the concept; it is NOT a real before/after pair — the chip says so, do not fake it.
+3. **"Get alerted the second they post"** — "Follow a creator and get alerted as soon as they post. One account is one product, so following a creator means following one product — ride the wave while it is still growing, before it goes too viral." Visual: a two-card alert feed with real video thumbnails and real handles — **@wingwolt.us "LED bike wings · velocity rising" 12 min ago** (with a pulsing live dot and a "New post" badge), **@jmj_gelblaster "Toy blaster · velocity rising" 26 min ago** (dimmed). Caption underneath: **"Alerted as soon as they post"**.
+
+### 2.11 Models strip — "Choose your model"
+- Heading: **"Choose your model"**
+- Subhead: **"Pick the model that fits the video. Default is Wan 3.0 — the workhorse."**
+- Three models, one line each:
+  - **"Default — Wan 3.0. Up to 30 seconds in one take, native audio, 9:16. $0.0325/s at 480p, $0.065/s at 720p, $0.13/s at 1080p (ArgoLink)."**
+  - **"Hero — Seedance 2.5. Best quality and consistency, for the video that has to land."**
+  - **"Clone — Kling O3. Video-to-video: copy a viral video's motion with your character."**
+- No invented benchmarks. No comparison table with made-up scores.
+
+### 2.12 Pricing (same cards as Section 4, rendered from `GET /api/v1/pricing`)
+- Monthly / annual toggle: **"Monthly"** / **"Annual — save up to 20%"**.
+- The 3 cards, exact content per Section 4.
+- Underneath, the reassurance strip: **"7-day free trial · no card required · No free plan — cancel anytime · Annual prices are per month, billed annually · See coin packs and add-ons →"**
+
+### 2.13 FAQ — "Questions, answered plainly" (6 questions, real answers — use these words)
+1. **"Is this TikTok Shop?"** — "No. CopyCat is for organic TikTok videos — AI-generated videos posted to a normal TikTok account, with no ad spend and no TikTok Shop."
+2. **"Do I need a product ready?"** — "No. Most users do not have a product ready yet — it is custom-made. Tell CopyCat what you are making (or tick "I don't have a product yet") and the concepts are built around it."
+3. **"How long are the videos?"** — "Up to 30 seconds in one take, 9:16, with native audio. Plans include 100 to 500 seconds a month; extra seconds are $0.20/sec."
+4. **"What models generate the video?"** — "Wan 3.0 is the default workhorse, Seedance 2.5 is the hero upgrade for the best quality, and Kling O3 is the clone mode that copies a viral video's motion and format for your product."
+5. **"What happens after my 7-day trial?"** — "Nothing is charged automatically — we never take your card for a trial. When it ends, generation locks until you pick a plan and pay through Stripe, and you can cancel any time. Trial limits: 24h leaderboard only, follow 1 creator, 3 concept lists, 2 × 10s videos at 480p watermarked."
+6. **"Can I use my own Higgsfield account?"** — "Yes — there is a BYO Higgsfield toggle. One thing to know: Higgsfield subscription credits do NOT pay for API calls. The API uses a separate pay-as-you-go balance. There is also a "Send to Higgsfield" web route that uses your subscription credits."
+
+### 2.14 Closing CTA band
+- H2: **"Ready to ride the next wave before it goes viral?"** (one word highlighted).
+- Sub: **"Find the format, get the concept, make the video — in the same app, for $49, instead of $108 across two tools."**
+- Comparison line with the real logos: **"$49/mo CopyCat Starter instead of Minea $49 + Higgsfield Plus $59 = $108/mo"**
+- Buttons: **"Start 7-day free trial"** (links to `/auth/?trial=1`) and **"See pricing"**.
+- Fine print underneath: **"7-day free trial · no card required · cancel anytime"**
+- Support line: **"Founder-level support — questions? Email hello@copycat.app and you will hear from the people building CopyCat."**
+
+### 2.15 Footer
+- 4 columns.
+- Brand column: logo **"CopyCat◆"**, then **"Find the viral video. Clone the format. Post it."**, then **"For people doing organic AI dropshipping on TikTok — no ad spend, no TikTok Shop."**
+- Product column: **Formats** · **How it works** · **Format Library**. Do NOT put Models here.
+- Plans column: **Pricing** · **Coin packs** · **Affiliate — $20 per referral**.
+- Legal column: **Privacy** · **Terms** · **Contact** (mailto:hello@copycat.app).
+- Bottom bar under a hairline rule. Left: **"© 2026 CopyCat. Working name — it will change."** Right: **"CopyCat v7.0 · 7-day free trial · no card required"** (keep the version string in one constant and bump it when you ship).
+
+---
+
+## 3. Auth (/auth) — VERY simple. This page was over-built before; do not repeat that.
+
+One card, centred — a transparent glass card (clear glass, strong blur, so the soft colour wash behind it shows through). The page behind it has a soft colour wash. Contents, in order, nothing else:
+
+1. H1: **"Welcome to CopyCat"**
+2. A one-line trial summary — ONLY when the user arrived from a trial link (`/auth/?trial=1`): **"7-day free trial — 24h leaderboard, follow 1 creator, 3 concept lists, 2 videos at 480p. No card required."** Hidden otherwise.
+3. Google button (white, Google "G" logo). The label follows the mode: **"Sign up with Google"** on the sign-up form, **"Sign in with Google"** on the log-in form. Clicking it: if Supabase Auth is connected (project URL + anon key in the frontend config, Google provider enabled in Supabase Auth, this site's URL in Supabase's allowed redirect URLs), start Google OAuth and return to /auth, which picks up the session and sends the user on; if not connected, show the honest inline status **"Google sign-in needs Supabase Auth connected — add your Supabase project URL and anon key, and enable Google in Supabase Auth. Use email for now — no account was created."** Do NOT create a fake Google account.
+4. Divider: **"or with email"**
+5. ONE form visible at a time.
+   - Sign-up form (default): field **"Email"** (placeholder "you@example.com"), field **"Password"** (placeholder "8+ characters", minimum 8), field **"Confirm password"** (placeholder "Repeat your password"), button **"Create account"**.
+   - Log-in form: field **"Email"**, field **"Password"**, button **"Log in"**.
+   - Switch between them with a small text link under the button — **"Already have an account? Log in"** / **"New here? Create an account"**.
+   - NO Sign up / Log in tabs. NO badge, NO explainer paragraph, NO "How sign-in works" box, NO "No TikTok sign-in" note, NO forgot-password link (password reset does not exist until Supabase Auth is connected — do not show a dead link).
+6. Show real errors inline, using these words: **"Passwords do not match"** · **"Password must be at least 8 characters."** · **"An account with that email already exists here. Log in instead."** · **"Email or password did not match an account in this browser."**
+
+Behaviour:
+- After sign-up from a trial link: start the trial immediately → /dashboard.
+- After sign-up from anywhere else: go to the `next` URL (default /pricing/).
+- After log-in: if the user has a plan or trial → /dashboard. If no plan/trial → the `next` URL (default /pricing/).
+- If the user is ALREADY signed in and opens `/auth/?trial=1` with no plan, start the trial straight away — no second sign-in.
+- No "Continue with TikTok" button — we do not have TikTok OAuth. Only Google + email.
+
+---
+
+## 4. Pricing & payment (/pricing) — exact content
+
+- Build the 3 cards from `GET /api/v1/pricing`. Monthly / annual toggle: **"Monthly"** / **"Annual — save up to 20%"**. Annual prices are per month, billed annually.
+- Trial banner FIRST, above the cards (this is the only trial offer on the page): a quiet bordered strip — **"Try it free for 7 days."** then **"24h leaderboard · follow 1 creator · 3 concept lists · 2 videos at 480p · no card required."** + a **"Start free trial"** button (links to `/auth/?trial=1`).
+- Stripe notice (under the banner): **"Stripe checkout: Price IDs not created yet. Checkout is wired and ready — it needs real Stripe Price IDs for Starter, Growth, and Scale before it can charge anyone. Choosing a plan now just shows this notice. No payment is taken and no charge is faked."** Update this notice the day Price IDs exist — do not leave it stale.
+- Comparison strip at the top of the page (under the H1 **"Pricing"**): **"One app instead of two subscriptions. CopyCat Starter $49/mo vs [Minea logo] Minea $49 + [Higgsfield logo] Higgsfield Plus $59 = $108/mo. You save $59/mo."**
+- Card structure:
+  - Badge: Growth only — **"Best value"**. NO "Most popular starter" badge on Starter (we have no users yet, nothing is most popular).
+  - Plan name, then the price prominent ($49 / $99 / $199) + "/mo".
+  - Annual only: a **"Save $120 / $240 / $480 a year vs monthly"** line under the price (computed from the backend prices, never hard-coded).
+  - Seconds hero block: the big number (100 / 240 / 500) + **"seconds of video / month"** + the small breakdown (**"10 × 10s videos at 480p · 5 × 10s at 720p"** / **"24 × 10s videos at 480p · 12 × 10s at 720p"** / **"50 × 10s videos at 480p · 25 × 10s at 720p"**).
+  - Feature list with checkmarks: the backend `features` array, VERBATIM — do NOT append a second "Follow N creators" line (the backend features already say "follow 10 creators" etc.; appending it again prints the same line twice — this bug shipped once already). Then the clones/heroes lines: if included, **"N Kling clones included"** / **"N Seedance heroes included"**; if NOT included, a MUTED line that points at the add-on price instead of a dead negative — **"No clones — add $3 per 10s"** / **"No heroes — add $7 per 15s"**.
+  - ONE button per card: **"Choose Starter"** / **"Choose Growth"** / **"Choose Scale"**. NO trial button on the cards. Clicking it: if not logged in → /auth with `next=/pricing/?choose=<plan>`; if logged in → show the Stripe-not-live notice (same text as above, with the trial link). Do NOT start a trial from a plan button.
+- Footnote under the cards: **"Annual prices are per month, billed annually. Add-ons: extra seconds $0.20/sec · extra clone $3 per 10s · extra hero $7 per 15s. 1 free retake, rest cost seconds. No rollover. Failed generation = 0 coins."**
+- **Coin packs — collapsed, NOT the signup story.** A `<details>` element under the pricing footnote, closed by default: summary **"Coin packs — top up seconds without a subscription"**. Inside: the one-line explainer (**"1 coin = 1 second of video at 480p. 720p = 2 coins/s, 1080p = 5, clone = 4, hero = 6. Packs last 12 months, no subscription required, subscribers get 20% off."**) + the 5 pack cards from `GET /api/v1/coins` (name, price, coins, **"12-month expiry · subscribers get 20% off"**, **"Buy pack"** button) + the honest line **"Coin packs are paid through Stripe Checkout. Stripe Price IDs for packs are not created yet, so buying is not live — the packs above come straight from the backend."** Buying a pack before Price IDs exist shows **"Checkout is wired, waiting on Stripe Price IDs. No charge was made."** — never fake a purchase.
+- Affiliate section under that (from `POST /api/v1/affiliate/calculate`): **"Affiliate: $20 flat bounty per paying subscriber — 90-day cookie, 30-day hold, $50 minimum payout."**
+
+---
+
+## 5. Dashboard — designed tab by tab. Read this whole section before building any dashboard page.
+
+The dashboard is a workspace, not a marketing page. The user opens it once or twice a day with one question: **what went viral in the last 24 hours, and what should I make next?** Every tab answers one question, and nothing else. No generic "Good morning" greeting, no decorative stat cards, no filler. It must look like a normal SaaS dashboard — a left sidebar, a page header, stat cards, then the content — not a bare page with just a title and a grid.
+
+There is NO onboarding flow. Do NOT build one. After sign-up or trial start, the user goes straight to /dashboard. Product and character are set in Settings (Profile section) and used as defaults on the Concepts page and in the Claude prompt — they are a profile, not a setup flow.
+
+### 5.0 The shell (same on every dashboard tab)
+- A quiet LEFT sidebar — the standard SaaS app shell. It has the small CopyCat wordmark at the top (this is a sidebar label, not the top bar — the top bar with the CopyCat logo exists ONLY on the landing page, nowhere else). The sidebar nav, text only: **Dashboard · My Videos · Concepts · Following · Format Library · Coins**. At the bottom: **Affiliate · Settings**, then the user's email + plan ("you@example.com · Trial · 5d left") and a **Log out** link. Active tab is highlighted. On phones the sidebar becomes a horizontal scroll strip. No search box in the shell, no notification bell — those are future work, not this build. Do not add a fake bell or a dead search box.
+
+### 5.1 Dashboard (home) — "Viral in the last 24 hours". This is the first page. This is the product.
+The user opens the app to see what went viral in the last day and recreate it. It must look like a normal SaaS dashboard — a left sidebar, a page header, stat cards, then the feed — not a bare page with just a title and a grid. Clean and minimal, but a real app, not a landing page.
+
+Layout, top to bottom:
+1. **Left sidebar** (see 5.0): wordmark, nav, user chip + Log out at the bottom. The main content sits to the right of it.
+2. **Page header:** **"Viral in the last 24 hours"** + one quiet line underneath: **"What took off on TikTok in the last day. Pick a video and recreate it — here, or on Claude."** On the right, a **"Generate a video"** button (goes to Videos). No window picker (the product is the last 24 hours — 2h/6h/3d windows are bloat, do not add them). No greeting, no "Rising fastest" strip, no right rail, no sort dropdown, no niche chips.
+3. **Stat cards:** one row of 4 small white cards, real numbers only, never invented:
+   - **Videos today** — the number of videos in the feed (e.g. 14), sub-line "in the last 24h".
+   - **Top video** — the top video's views, compact (e.g. "24.9M views"), sub-line "@creator".
+   - **Your seconds** — the real remaining seconds (e.g. "87s"), sub-line "left · Starter" (or the real plan name, or "no plan").
+   - **Creators followed** — the real count, sub-line "creators you follow".
+4. **The feed:** the viral videos as a grid of video cards, **4 videos in one line** on desktop (3 on medium screens, 2 on small, 1 on phones). Each card is the video itself, 9:16, filling the card. Data: `GET /api/v1/leaderboard?window=24h`. When the backend has live data, use it, ranked by velocity. When it returns demo data (Treg not connected), show the 14 real TikTok videos already on the site as the preview feed, ranked by their real view counts, with the honest banner **"Preview data. Real TikTok videos, ranked by views. Live velocity ranking connects when Treg is set up."** Never show a velocity number, caption, or CTA keyword that is not real — preview cards show only the real creator, the real views, and the real product.
+5. **Hover-reveal (the clean look).** At rest the card shows only the video and a tiny bottom strip: **@creator** + views. On hover (desktop) the video plays (muted, loop) and an overlay fades in with: the product, the caption, views (and velocity in views/hour when the backend provides it), the CTA keyword as a small tag when there is one (e.g. 'Comment "WINGS"'), and the two recreate actions — **"Recreate here"** and **"Copy Claude prompt"** — plus a small **"Follow @creator"** text link underneath. On touch screens there is no hover, so tapping the card (not the buttons) toggles the same overlay and plays/pauses the video. Buttons under every card would add a row of chrome to each of the 4 cards and compete with the videos — the hover version keeps the grid pure video and shows actions only when the user is interested in that card.
+6. **The two recreate paths (this is the product):**
+   - **"Recreate here"** — goes to Concepts with this video pre-filled, and concepts generate straight away (no extra click). The user picks a concept, then generates the video (Wan 3.0 default, up to 30s, 9:16, native audio). This is the in-app video generation path.
+   - **"Copy Claude prompt"** — copies a complete, ready-to-paste Claude prompt to the clipboard and briefly reads **"Copied ✓"**. The prompt contains: the viral video (format/product, creator, views, CTA, caption), the user's product and character (from Settings — if not set, it says so and asks Claude to suggest a character), and asks Claude for: (1) a concept adapted to their product, (2) a hook for the first 0–3 seconds, (3) a 5-shot breakdown with timestamps, (4) the caption and CTA word, (5) a video generation prompt to paste into a video tool (9:16, up to 30 seconds, native audio). This is the "generate it yourself on Claude" path — the same workflow the product's own users already use (Claude for concept/workflow, then a video tool).
+7. **A small count line under the grid:** **"14 videos · 24h · preview snapshot"** (or "· live" when the data is live).
+8. **Why it is laid out like this:** the user opens the app with one question — what went viral in the last day, and how do I make one like it? The sidebar and header make it feel like a real app, the stat cards give the at-a-glance summary a dashboard needs, and the feed is the product — the two recreate paths are one hover away. Nothing else competes with it.
+
+### 5.2 Leaderboard — the full discovery browser
+Home is "what's hot now". Leaderboard is "find the exact format I need". Same videos, different job — so it gets the full toolset, and the two pages must NOT look identical:
+- **Keyword search box at the top:** "Search LED wings, toy blaster, gift…" — searches captions and creator handles. This is the first thing on the page, because discovery here starts with a search, not a scroll.
+- **Platform toggle:** TikTok (default) / Instagram. Instagram is Growth+ only — Starter users see a lock and an upgrade prompt. Do not fake Instagram data.
+- **Window picker** (2h / 6h / 24h / 3d / Custom date) — built from `GET /api/v1/windows`, not from hard-coded values. Picking a date shows what was trending that day. NO 3h, NO month — if the backend rejects a window, show its error. TRIAL LIMIT: trial users see ONLY the 24h window here — the other windows show an upgrade prompt, not data.
+- **Sort:** Velocity (default) / Views / Engagement rate, with a tooltip showing the formula: "(views now − views last check) / hours since last check".
+- **Grid / table toggle.** Grid is the default (video cards, same as home). Table is for fast scanning: rows with thumbnail, creator, views, velocity, engagement, CTA keyword, took off/flopped. Power users scan a table 10x faster than a grid — give them the choice.
+- **Compare:** tick two videos and a "Compare" button appears. Side by side: views, velocity, comments, posting time, CTA keyword. The user is deciding which format to copy — comparison is the decision tool.
+- **Saved filters:** a "Save this filter" button next to the search. Saved filters appear as chips under the search box ("LED wings · 6h", "Toys · 24h"). The user runs the same searches every day — don't make them rebuild the filter each time.
+- If the backend returns 503 demo data, a banner across the top: **"Demo data — connect Treg for live TikTok data"** and every card labelled "Demo". Never present demo items as live data.
+
+### 5.3 Following — your creators, one card each
+- Header: **"Creators you follow"** + the count + a **"Follow a creator"** search box (search by handle, or paste a TikTok link).
+- **"New posts" section at the top:** any followed creator who posted since your last visit, with "New" badges. This is the alert feed — the reason following exists.
+- **One card per creator** (not a table — following is about watching a small set of products over time, and a card shows the trajectory at a glance). Each card:
+  - Avatar + handle + the product they're selling, shown as a tag (one product per creator — that is the whole point: following a creator means following their product).
+  - **"Alert on new post"** toggle, on by default.
+  - Last post time ("posted 2h ago").
+  - Their last 5 videos as small thumbnails in a row, each with views and a took off/flopped tag. The best-performing of the 5 is highlighted with a **"Best"** marker and a **"Recreate here"** button under it (goes to Concepts with that video pre-filled).
+  - An **"Unfollow"** action, quiet, in the corner — following is a commitment, unfollowing should be one click, not a settings maze.
+- TRIAL LIMIT: trial users can follow 1 creator only. Following a 2nd shows an upgrade prompt.
+- Empty state (no follows yet): **"You're not following anyone yet — follow creators from the leaderboard. One account = one product, so following a creator means following their product."** + a **"Browse trending"** button.
+
+### 5.4 Concepts — the bridge between "I saw it" and "I made it"
+- Top of the page: a small **"brief"** card — **"Concepts for: LED bike wings · a cyclist in a yellow jacket"** (product + character from Settings) with an **"Edit"** link. Every concept on the page is for THIS brief, so the brief is always visible.
+- **"Generate concepts" bar:** source video (optional — pick from the leaderboard or paste a link), niche dropdown, and the **"Generate concepts"** button. Loading state: **"Claude is writing your concepts…"**
+- When the user arrives from "Recreate here" on a viral video, the source video is already filled in and concepts generate straight away — no extra click.
+- Results as concept cards in a LIST (one per row, not a grid — concepts are meant to be read, not browsed like videos). Each card:
+  - Title, then the hook (first 3 seconds, in quotes — the hook is the whole concept).
+  - The 5 shots, short, with timestamps: 0–3s hook, 3–8s problem, 8–15s demo, 15–20s proof, 20–25s CTA.
+  - Buttons: **"Use this concept"** (goes to the generator with the concept pre-filled), **"Edit"** (inline text edit), **"Save"**.
+  - A status tag on saved concepts: **"Unused"** / **"Used in a video"** / **"Generated"**.
+- **"Saved concepts" section** below the generator: all saved concepts, grouped by product/format. The user builds a library over time instead of regenerating from scratch — a good concept gets reused across videos.
+- If the backend returns `template_fallback`, label it: **"Template concepts — connect OpenRouter for Claude Sonnet concepts"**. Do not present templates as Claude output.
+- TRIAL LIMIT: trial users get 3 concept lists TOTAL across the whole trial. Count them and show it plainly: **"2 of 3 concept lists left in your trial"** — when they run out, show an upgrade prompt, not a dead button.
+
+### 5.5 Videos — the studio (generate + your library, one page)
+Generation and the library belong together: you generate, you see the result in the same place, you iterate without navigating away.
+- Top: the **"New video"** composer. Left: the concept or prompt (pre-filled if you came from Concepts; free text if not — the prompt is REQUIRED, show an error if empty). Middle: mode as three selectable cards, one line each — **"Wan 3.0 — default, cheapest, up to 30s"** / **"Clone — copy a viral video's motion, Kling O3"** / **"Hero — best quality, Seedance 2.5"** — then resolution (480p default, cheapest / 720p / 1080p), seconds slider (5–30, default 10), aspect ratio (9:16 default, TikTok / 16:9 / 1:1). Reference images from your saved product/character (Settings) shown as thumbnails you can toggle on/off. Start/end frame (optional). Right: the live cost preview — call `POST /api/v1/coins/calculate` on every change and show **"10 coins — you have 100 seconds left"** — and the **"Generate"** button. If the user does not have enough seconds/coins, show **"Not enough seconds — buy coins or upgrade"** with a link, and do not let them submit.
+- BYO Higgsfield toggle (off by default): when on, show the warning **"Higgsfield subscription credits do NOT pay for API calls — the API uses a separate pay-as-you-go balance"** and a "Send to Higgsfield" option.
+- Submit → `queued` state with a progress indicator, poll every 10s. When done, the video appears at the top of the library: 9:16 player, autoplay muted loop, **"Download"**, **"Post on TikTok"** (opens TikTok upload — do not claim auto-posting if it is manual), **"Make a variation"** (same concept, new seed), **"Use as reference for the next clip"**.
+- **"My videos" library** below the composer: a grid of all generated videos. Each card: the video (plays on hover), status (**"Generating…"** with progress / **"Done"** / **"Failed — 0 coins charged"** with a **"Retry free"** button), mode + resolution + seconds, coins spent, date, **"Download"**, **"Make a variation"**, **"Use as reference for next clip"**, **"Delete"**.
+- Clips are stitched with FFmpeg on the backend. Show **"Stitch clips"** as a coming-soon feature if the backend does not support it yet — do not fake it.
+- TRIAL LIMIT: trial users get 20 seconds total (2 x 10s at 480p), watermarked, 480p only. The seconds counter enforces it — when 0 remain, show an upgrade prompt.
+
+### 5.6 Formats — the Format Library (a cookbook, not a feed)
+- Header: **"Formats that are working"** + niche filter chips (same 7 taxonomy niches).
+- Layout: one card per format, in a grid. Each card: the example video playing, the format name (**"Comment WORD for the link"**, **"Problem → solution demo"**, **"Gift reaction"**, **"Story format"**, **"Character dance"**), the hook in one line, the shot list (5 shots, short), the niche tag, and a **"Use this format"** button (goes to Concepts with the format pre-filled).
+- **"Still to come — 6 videos we need"** section at the bottom: the 6 missing videos from Section 6, with their exact specs. This is where the user's uploaded videos go.
+- Why a grid of cards: the library is a reference shelf. You browse formats the way you'd browse a cookbook — see the dish, read the recipe, cook it. It is not a feed and it does not need velocity sorting.
+
+### 5.7 Coins — money, in the order you'd ask about it
+- Top: the balance, big and plain — **"You have 100 seconds left this month"** + a usage bar (**"Used 40 of 100 seconds"**) and the coin balance next to it.
+- **"Buy coins"** — the 5 packs as cards (same packs as Section 4): name, price, coins, **"12-month expiry · subscribers get 20% off"**, **"Buy pack"** button. Buying before Stripe Price IDs exist shows **"Checkout is wired, waiting on Stripe Price IDs. No charge was made."**
+- **"How coins work"** — one short explainer, no more: **"1 coin = 1 second at 480p. 720p = 2 coins/s, 1080p = 5, clone = 4, hero = 6. Failed generation = 0 coins."**
+- **Transaction history:** real rows only (date, what, coins, balance after). If none: **"No transactions yet"** — not fake rows.
+- Why this order: coins are money. The page answers "how much do I have, what did I spend, how do I get more" — in that order, nothing else.
+
+### 5.8 Affiliate — a business tool, not a banner
+- Top: your referral link in a copy box + a **"Copy link"** button. The rule stated plainly above the box: **"Your link activates after you've been paying for 30 days."** If not yet eligible, the box area shows that rule instead of a link — do not show a dead link.
+- Stats row, real numbers only ("—" if none): referrals, paying subscribers, earned, paid out.
+- **"How it works"** — the terms in plain words: **"$20 flat, one time, per paying subscriber, any plan. 90-day cookie, last click. Paid only on the first paid month, after a 30-day hold. $50 minimum payout, paid monthly via PayPal or Stripe Connect. No self-referrals."**
+- Referral list below: real rows only (who, plan, status, payout date).
+- Why: the user wants to know "what's my link, how much have I made, when do I get paid" — in that order.
+
+### 5.9 Settings — one page, in the order you'd look for things
+Sections on ONE page (not a maze of sub-pages):
+- **Profile** — name, email.
+- **Product & character** — edit your product and character (used as defaults on Concepts and in the Claude prompt).
+- **Notifications** — new-post alerts on/off, email digest on/off.
+- **Plan** — current plan, trial days left if on trial, seconds used/remaining, **"Upgrade"** / **"Downgrade"**, **"Cancel"** (via Stripe Customer Portal once Stripe is live).
+- **Billing** — invoices. Real Stripe invoices when live; **"No invoices yet"** until then.
+- **Danger zone** — **"Cancel account"** with a confirmation step. Do not hide it.
+
+---
+
+## 6. Videos — the 17 we have, and the 6 we still need
+
+### Videos already on the site (use these — do not re-generate them)
+
+**14 real TikTok product videos** (other creators' videos, used as format examples — show them WITH creator credit: @handle + real views, on every placement. For a public launch, swap in CopyCat-generated videos or get permission. Do not claim they were generated by CopyCat.):
+- `led-wings-1.mp4` — @wingwolt.us, 1,148,595 views, 19s (LED bike wings at night)
+- `led-wings-2.mp4` — @apexmotoclub, 528,816 views, 15s (LED wings reaction)
+- `led-wings-3.mp4` — @ride.flare, 490,960 views, 12s (LED wings)
+- `toy-blaster-1.mp4` — @jmj_gelblaster, 996,348 views, 28s (toy blaster)
+- `toy-blaster-2.mp4` — @jmj_gelblaster, 719,793 views, 17s (toy blaster, black)
+- `gift-necklace.mp4` — @bestiesnecklace, 67,688 views, 13s (gift necklace unboxing)
+- `made-me-buy-it-1.mp4` — @sarvina450, 24,906,387 views, 12s (home gadget)
+- `made-me-buy-it-2.mp4` — @velora8892, 14,316,378 views, 8s (made me buy it)
+- `projector.mp4` — @breyannahhenry, 20,020,864 views, 30s (mini projector)
+- `christmas-tree.mp4` — @baw6v5, 9,922,551 views, 16s (tiny Christmas tree)
+- `car-lights-1.mp4` — @maximus.yohe, 9,941,000 views, 28s (wireless car lights)
+- `car-lights-2.mp4` — @motoledsofficial, 4,840,174 views, 14s (car lights)
+- `beauty-gloss.mp4` — @globalbeautyreviewer, 206,632 views, 16s (beauty gloss)
+- `beauty-routine.mp4` — @yunaohh, 69,099 views, 28s (night routine)
+- Every one has a matching `-poster.jpg` (first frame). All are H.264 — NEVER ship HEVC (H.265): Chrome on Windows/Android and Firefox often cannot play it (this bug shipped once already).
+
+**3 of the founder's own videos** (label these "Generated with CopyCat" where shown):
+- `dancing-character-hero.mp4` — 10.7s, 9:16, indoors dancing (blonde bob wig, brown suit, gold gloves). Hero + fandom format tab.
+- `dancing-character-outdoor.mp4` — 20.5s, 9:16, outdoors on the steps of a grand building. Format Library "Character dance" + the clone split-screen visual.
+- `barber-story.mp4` — 54.8s, 1:1, animated Pixar-style barber/Jordan story ("IT'S A DESIGN"). Format Library "Story format" ONLY — too long and too square for the hero.
+
+**How to use the videos:** `<video>` tags, `playsInline muted loop autoplay`, `preload="metadata"`, poster = the matching `-poster.jpg`. Do NOT hotlink to any media library path — the files live in the app's `videos/` folder.
+
+### YES — we need 6 more videos. Exact specs (tell the user to upload these):
+
+Each under 100 MB, 9:16, 10-30 seconds, MP4, with audio (except #6):
+
+1. **Product demo — LED bike wings** (10s, 9:16): a product in use, close-up, "Comment WINGS for the link" on screen. For the hero "Product demo" tab + Format Library "Product demo" card.
+2. **Gift unboxing / reaction** (10s, 9:16): someone opening a gift, reaction shot, on-screen benefit text. For Format Library "Gift reaction" card.
+3. **Toy blaster demo** (10s, 9:16): toy in action, fast cuts, fun. For Format Library "Toys" tab.
+4. **Hero / Seedance quality showcase** (15s, 9:16, 1080p): the best-looking video we have, to show what the Hero (Seedance) tier can do. For the pricing page, Scale plan card.
+5. **Clone before/after** (15s, 9:16): split screen — original viral video on the left, CopyCat clone on the right, same format, different product. For the landing page "How it works" section. **This is the most important missing video.**
+6. **Dashboard screen recording** (20s, 16:9, no audio needed): a real screen recording of the dashboard — leaderboard → concepts → generate → video appears. For the landing page "How it works" section. Record it from the actual app, do not fake it with an animation.
+
+Until those 6 arrive, build the site with the 17 videos we have + the "Still to come — 6 videos we need" list in the Format Library. Do NOT use stock video from the internet and pretend it was generated with CopyCat.
+
+---
+
+## 7. Backend — already built and live. USE IT. Do not invent a backend.
+
+Base URL: `https://dropship-api.chideraezeudu2.workers.dev`
+Version: v2.0.0. All endpoints are JSON, CORS `*`. Single API helper for all calls; handle 503/502/400 with the REAL error message from the backend, never a generic "Something went wrong".
+
+| Method + path | What it does | What to do when the key is not set |
+|---|---|---|
+| `GET /health` | `{status: "ok", service: "dropship-api", version: "2.0.0"}` | Dashboard "System status" indicator |
+| `GET /api/v1/config` | Booleans only, never secret values: `treg_configured`, `openrouter_configured`, `argolink_configured`, `supabase_configured`, `stripe_configured` | Show a real status, not a fake green light. If false, show "Not connected yet" |
+| `GET /api/v1/windows` | Windows: `["2h","6h","24h","3d","custom"]`, default `6h`, rejected `["3h","month","7d","30d"]` | Build the Leaderboard window picker from this, not from hard-coded values. The dashboard home is fixed at 24h and does NOT use a window picker. |
+| `GET /api/v1/taxonomy` | Savio taxonomy: gifting_holiday, fandom_character, automotive, cycling_moto, toys_games, beauty_practical, home_lifestyle + CTA patterns + hard excludes | Use these as the leaderboard niche filter options |
+| `GET /api/v1/pricing` | Plans + trial + add-ons + profit per subscriber. Response shape is in the pricing block below | Build /pricing AND the landing pricing cards from this response, not from hard-coded prices |
+| `GET /api/v1/coins` | Coin definition, coins per second, packs, 12-month expiry, 20% subscriber discount | Build the coin balance / buy-coins UI from this |
+| `POST /api/v1/coins/calculate` `{seconds, resolution, mode}` | Returns coins, video cost, pack price/profit | Call this live in the video generator before the user confirms — show the real coin cost |
+| `GET /api/v1/leaderboard?window=24h&niche=&platform=tiktok&date=` | Live via Treg if key set, else 503 `treg_not_configured` + labelled `sample_demo` (3 items) | If 503, show the demo items with a clear "Demo data — connect Treg for live data" badge. NEVER present demo items as live data. If 400, show the error. If 502, show "Treg failed, try again" |
+| `POST /api/v1/concepts` `{product, character, niche, video_id}` | Live via OpenRouter (Claude Sonnet) if key set, else labelled `template_fallback` (5 concepts) | If template_fallback, label it "Template concepts — connect OpenRouter for Claude Sonnet concepts". Do not present templates as Claude output |
+| `POST /api/v1/videos/generate` `{seconds 1-30, resolution, mode: wan\|clone\|hero, prompt (required), reference_images, reference_videos, reference_audios, start_image, end_image}` | ArgoLink primary (Wan `wan-3`, Seedance `seedance-2.5`), OpenRouter fallback for Wan. Returns `queued` + `job_id` + `poll_url`. NEVER invents a video URL | On `queued`, go to a "Generating…" state and poll `poll_url`. On 503 `provider_not_configured`, show the missing secret name and a "Not connected yet" state. On 400 `missing_prompt`, show the validation error inline |
+| `GET /api/v1/videos/:id?provider=argolink\|openrouter` | Poll a submitted video job | Poll every 10 seconds, max 10 minutes, then show "Still generating — we will notify you" |
+| `GET /api/v1/video-providers` | Router, rates, secrets needed per mode | Use this for the "Models" picker in the generator: Wan (ArgoLink $0.0325/0.065/0.13 per s), Hero Seedance ($0.0874/0.196/0.483 per s), Clone Kling O3 via fal ($0.168/s) |
+| `GET /api/v1/byo/higgsfield` | BYO Higgsfield routes: API vs Send-to-Higgsfield web | Build the BYO toggle from this. IMPORTANT copy: "Higgsfield subscription credits do NOT pay for API calls — the API uses a separate pay-as-you-go balance" |
+| `POST /api/v1/trial/start` `{email}` | Validates email, rejects disposable domains, returns trial limits. No DB yet — returns `{status: "trial_limits", db: "schema_not_run"}` | Show the trial limits honestly. Do not claim a trial was created if the response says `schema_not_run` |
+| `POST /api/v1/affiliate/calculate` `{plan}` | $20 flat one-time bounty. Lifetime % requests return 400 | Build the affiliate page from this. Reject lifetime % in the UI — do not offer it as an option |
+| `GET /api/v1/profit?users=100` | Full profit model, 60/30/10 mix | Use for the admin / founder view only, not the landing page |
+
+Pricing (from the backend — do not change these numbers). The response is:
+- `trial: {days: 7, card_required: false, max_cost_usd: 0.82}` and `free_plan: null` with the note "No free plan. 7-day trial only."
+- **Starter: $49/mo, $39/mo annual (save $120/year).** 100 seconds included (= 10x 10s videos at 480p / 5x at 720p). Follow 10 creators. Features from the backend: "unlimited leaderboard viewing", "follow 10 creators", "unlimited Claude concepts". No clones, no heroes.
+- **Growth: $99/mo, $79/mo annual (save $240/year).** 240 seconds (= 24x 10s at 480p / 12x at 720p). Follow 30. Features: "everything in Starter", "follow 30 creators", "Instagram Reels leaderboard", "TikTok + Meta ad library". 2 Kling clones included. No heroes.
+- **Scale: $199/mo, $159/mo annual (save $480/year).** 500 seconds (= 50x 10s at 480p / 25x at 720p). Unlimited follows. Features: "everything in Growth", "unlimited follows", "priority render queue". 5 clones + 2 Seedance heroes included.
+- Add-ons: extra seconds $0.20/sec, extra clone $3 per 10s, extra hero $7 per 15s. 1 free retake, rest cost seconds. No rollover. Failed generation = 0 coins.
+- Coins: 1 coin = 1 second at 480p. 720p = 2 coins/s, 1080p = 5, clone = 4, hero = 6. Failed generation = 0 coins. Packs (no subscription required, 12-month expiry, subscribers get 20% off): Starter Pack $4.99/50 coins, Creator Pack $17.99/200, Pro Pack $39.99/500, Studio Pack $69.99/1,000, Whale Pack $149.99/2,500.
+- Affiliate: $20 flat one-time per paying subscriber, any plan. 90-day cookie, last-click, paid only on first paid month, 30-day hold, $50 minimum payout, paid monthly via PayPal / Stripe Connect. No self-referrals. Referral links are blocked until the user has paid for 30 days.
+- Profit per subscriber per month (backend, for the founder view only): Starter $42.79, Growth $86.44, Scale $174.39.
+
+Video providers (from the backend — do not change these):
+- Wan 3.0 via ArgoLink: $0.0325/s 480p, $0.065/s 720p, $0.13/s 1080p. Up to 30s in one take, native audio, 9:16, up to 10 images / 5 videos / 5 audio references.
+- Seedance 2.5 via ArgoLink (hero): $0.0874/s 480p, $0.196/s 720p, $0.483/s 1080p.
+- Kling O3 via fal (clone): $0.168/s. Clone mode in backend v2 is key-check only — the queue call is NOT wired. Show the clone option honestly as "wiring in progress" if the backend says so; do not fake a clone.
+- OpenRouter fallback for Wan: $0.0897/s effective at 720p (includes the 5.5% credit-purchase fee).
+
+Auth + DB + payments (frontend must wire these — the backend does NOT do them):
+- **Supabase Auth** for sign-up / login (Google OAuth + email/password). **Not connected yet** — until it is, auth is a local preview in the browser (localStorage keys: `cc_user`, `cc_users`, `cc_plan`, `cc_onboarding`, `cc_follows`, `cc_videos`, `cc_concepts`, `cc_coins`). Passwords are hashed (SHA-256) in the browser preview. Say so honestly in the UI wherever auth state is shown — never pretend the local preview is a real account.
+- **Supabase DB** for users, trials, subscriptions, coin_balances, videos, follows, leaderboard_snapshots, affiliates. Migration file: `supabase/migrations/001_dropshipper.sql` (in the project repo — read it, do not invent a schema). It has NOT been run yet.
+- **Stripe Checkout** for subscriptions + coin packs. Use Stripe Price IDs from environment variables, never hard-code them. **Price IDs do not exist yet** — checkout is wired but cannot take a payment. Show the honest notice (Section 4), never fake a charge.
+- All API keys and Price IDs come from environment variables. NEVER put a secret key in frontend code, in a .env file committed to the repo, or in a screenshot.
+- Worker secrets still missing on `dropship-api` (owner-only, Cloudflare dashboard, never paste in chat): `ARGOLINK_API_KEY` (rotated), `OPENROUTER_API_KEY`, `TREG_API_KEY`, `FAL_API_KEY`, `HIGGSFIELD_API_KEY`, plus Supabase/Stripe after migration 001.
+
+---
+
+## 8. Honesty rules, nav chip, SaaS logos — small things that shipped wrong before
+
+**Honesty rules (these are about content, not styling — they are non-negotiable):**
+- No lorem ipsum, no "Lorem", no "Your text here", no placeholder copy anywhere.
+- No fake testimonials, no fake brand logos, no fake user counts, no fake revenue numbers, no fake "15M+ ads" stats.
+- No "Most popular" badge — we have no users yet, nothing is most popular.
+- No emojis in the UI (except in user-generated video captions, where they are content). One exception: the `✦` mark, used ONLY as the single loop-seam marker in the scrolling ticker.
+- Every button does something real (or is clearly disabled with a reason, e.g. "Upgrade to Growth to unlock Instagram").
+- Every page has a real loading state, a real empty state ("No videos yet — generate your first one"), and a real error state ("Treg failed — try again").
+- All copy is in plain, confident English. No "Unlock the power of…", no "Supercharge your…", no "Revolutionize…".
+- The landing page hero demo actually works (pick a video → concepts appear → generate button calls the backend). If the backend is not connected, show the real 503 message honestly.
+- No console errors, no broken images, no 404 links. Every footer link goes to a real page.
+
+**Nav user chip (landing + pricing navs):** the chip sits left of the Log in / Start free trial buttons.
+- Not signed in: chip is EMPTY (show nothing).
+- Signed in, no plan: chip shows just the email — e.g. `chu@gmail.com`. NO "No plan", NO "0s left".
+- Signed in, on trial: `email · Trial · Nd left` (days left, computed from `trial_ends_at`).
+- Signed in, on a paid plan: `email · Starter` (or Growth / Scale).
+- "Log in" button: HIDDEN once the user is signed in. (It shipped visible next to the chip once — that is the bug.)
+- "Start free trial" button: when the user has a plan or an active trial, it becomes "Dashboard" and links to /dashboard/. Otherwise it stays "Start free trial" and links to `/auth/?trial=1`.
+
+**SaaS logos (Minea + Higgsfield):** real brand marks, fetched from the brands' own sites, stored in the app's `images/` folder as `minea.png` (orange pickaxe) and `higgsfield.png` (lime squiggle). The logos MUST sit beside the name on the same line (a global `img { display: block }` rule once forced them onto their own line — that is the bug to avoid). Placements: landing trustline, landing pricing lede, compare-table header + rows, FAQ Higgsfield question, pricing page lede, videos page BYO Higgsfield label, closing CTA compare line. Copy next to them states the saving plainly: "You save $59/mo" ($108 − $49, honest arithmetic).
+
+**What is NOT live, and how to say so (do not hide these — say them in the UI, in plain words):**
+- **Stripe Price IDs do not exist yet.** No payment is taken anywhere. Trial starts locally, "Choose plan" shows the honest notice, "Buy pack" shows "Checkout is wired, waiting on Stripe Price IDs. No charge was made."
+- **Supabase Auth/DB not connected.** Auth is a local preview (localStorage, this browser only). Google sign-in honestly says it activates once Supabase Auth is connected. The migration `001_dropshipper.sql` has not been run. No cloud sync until then.
+- **Backend Worker keys missing** (`ARGOLINK_API_KEY`, `OPENROUTER_API_KEY`, `TREG_API_KEY`, `FAL_API_KEY`, `HIGGSFIELD_API_KEY`): leaderboard shows labelled demo data, concepts show the labelled template fallback, video generation shows the real 503 message, clone is "wiring in progress".
+- **The 6 videos in Section 6 are still owed.** The Format Library lists them as "Still to come".
+- **CopyCat is a temporary working name.** The footer says so: "© 2026 CopyCat. Working name — it will change."
+
+---
+
+## 9. Tech — what to build it with
+
+- Static multi-page site — plain HTML/CSS/JS, one shared `styles.css` + `app.js`, routes as real pages: `/`, `/pricing/`, `/auth/`, `/dashboard/`, `/leaderboard/`, `/following/`, `/concepts/`, `/videos/`, `/formats/`, `/coins/`, `/affiliate/`, `/settings/`, `/privacy/`, `/terms/`. (There is NO /onboarding/ route — onboarding was removed. Do not build one.) This is the stack the live site uses on Cloudflare Workers Static Assets. Match the live site's look. If AI Studio prefers a React/Vite SPA, that is acceptable ONLY if every route, behaviour, and piece of copy above is preserved exactly and it still deploys as static files.
+- `APP_NAME` is one config constant. All API calls go through one helper (`api()`), base URL `https://dropship-api.chideraezeudu2.workers.dev`.
+- Local preview state in localStorage: `cc_user`, `cc_users`, `cc_plan` (plan object: `{plan, started_at, trial_ends_at, stripe}` — `plan` is `starter` / `growth` / `scale` / `trial`; trial = 20 seconds), `cc_onboarding` (product/character profile — kept under this key name so saved data is not lost), `cc_follows`, `cc_videos`, `cc_concepts`, `cc_coins`.
+- Page init map keyed on `document.body.dataset.page`. Shared helpers: `esc()` (HTML-escape everything from the backend before injecting), `money()`, `fmt()`.
+- Environment variables (for the Supabase/Stripe wiring when it lands): `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `NEXT_PUBLIC_API_URL`, `STRIPE_SECRET_KEY` (server only), `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY`. Never commit a `.env` file. Never put a secret in frontend code.
+- Deploy target: Cloudflare Workers Static Assets (the live site) — or Cloudflare Pages / Vercel if you say which one in your output.
+- Add a `README.md` in the repo with: how to run locally, which env vars to set, how to deploy, the trial model (Section 1), and the 5 Worker secrets that still need setting on the backend.
+
+---
+
+## 10. What "done" means
+
+Build the whole app, then verify:
+1. Landing page loads, matches Section 2 in order, with the exact copy in it. Hero demo works. Pricing matches the backend exactly ($49/$99/$199, $39/$79/$159 annual, 100/240/500 seconds).
+2. The trial is ONE trial, not per-plan: no trial button on any pricing card, trial starts only from `/auth/?trial=1`, trial limits are 24h leaderboard / 1 creator / 3 concept lists / 2 videos, nothing is charged automatically.
+3. Auth page is minimal (Section 3): Google + email only, no tabs, no badge, no explainer box, no TikTok note, no forgot-password link.
+4. Pricing page: trial banner above the cards, single "Choose" button per card, no duplicated "Follow N creators" line, no "Most popular" badge, coin packs collapsed in a `<details>`.
+5. Nav chip behaves per Section 8 (email only with no plan, Log in hidden when signed in, trial button → Dashboard with a plan/trial).
+6. Format tabs show 2 real videos with creator credit per tab.
+7. Dashboard: the home page is the viral feed (Section 5.1) with the sidebar, page header, and stat cards, and every tab is built the way Section 5 describes it — home, leaderboard, following, concepts, videos, formats, coins, affiliate, settings. Trial limits are ENFORCED (24h window only, 1 follow, 3 concept lists, 20 seconds).
+8. Leaderboard, Concepts, Generate, My Videos all call the real backend endpoints and handle 503/502/400 honestly.
+9. All 17 videos play (H.264 only, posters present), in the placements in Section 6. The 6 missing videos are listed in the Format Library.
+10. The honesty rules in Section 8 pass, every one of them.
+11. No console errors, responsive on phones, no lorem ipsum, no fake testimonials/numbers.
+
+In your final output, list: (a) what you built, (b) the 6 videos we still need (Section 6), (c) the 5 Worker secrets that still need setting, (d) anything you could not build and why — do not claim something works if you did not test it.
+
+---
+
+## 11. One-line summary to paste into AI Studio
+
+> Build CopyCat (temporary name, one APP_NAME constant), a premium AI organic TikTok dropshipping app. Two jobs only: see what went viral in the last 24 hours, and recreate it — either in the app (pick a video → tailored concepts → generate) or on Claude (a ready-to-paste Claude prompt copied from the video card). Landing page first — exact copy is in the spec: promo banner, header, hero ("Find the viral video. Clone the format. Post it."), video marquee, ticker, 3 steps, live demo, "Going viral right now" grid with real videos and views, format tabs with 2 real videos each, feature rows, models, pricing, FAQ, closing CTA, footer. ONE free trial only — 7 days, no card, 24h leaderboard, 1 creator, 3 concept lists, 2 videos — never per-plan; pricing cards have a single "Choose" button and Stripe is not live yet. Auth is minimal (Google + email only). No onboarding — sign-up goes straight to the dashboard. The dashboard is the core: a proper SaaS layout (left sidebar, page header, 4 real stat cards, then the 24h feed, 4 videos across, hover-reveal with "Recreate here" and "Copy Claude prompt"), then Leaderboard (search, compare, table view), Following (one card per creator), Concepts (readable list + saved library, auto-generates from a viral video), Videos (generator + library on one page), Formats (cookbook cards), Coins, Affiliate, Settings — each tab designed in the spec, trial limits enforced. Backend is live at https://dropship-api.chideraezeudu2.workers.dev (v2.0.0) — use its real endpoints, pricing ($49/$99/$199), and honest 503/demo states. Match the live site's look at https://copycat.chideraezeudu2.workers.dev/ — this spec covers content, order, and behaviour, not styling. No fake testimonials or numbers, no lorem ipsum. Use the 17 videos we have (14 real TikTok examples with creator credit + 3 of ours) and list the 6 more we still need. Full spec above — follow it exactly.

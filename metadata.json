@@ -1,0 +1,6 @@
+{
+  "name": "CopyCat",
+  "description": "Watch the fastest-growing organic TikTok videos while they are still growing, get concepts tailored to your product, and generate the video in one click — no ad spend, no TikTok Shop, no starting from scratch.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
